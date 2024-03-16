@@ -49,7 +49,5 @@ fn main() -> io::Result<()> {
         w.write_record(&items)?;
     }
 
-    w.flush()?;
-
-    Ok(())
+    w.flush()
 }
