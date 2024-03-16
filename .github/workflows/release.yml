@@ -45,7 +45,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1.0.7
@@ -108,7 +108,7 @@ jobs:
     name: Publish Crates
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
       - name: Publish | crates.io
         uses: katyo/publish-crates@v2
