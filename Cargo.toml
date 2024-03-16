@@ -2,6 +2,9 @@
 name = "ucloud-cdn-log-parser"
 version = "0.1.0"
 edition = "2021"
+description = "Parse UCloud CDN log files to CSV"
+license = "MIT"
+repository = "https://github.com/yinheli/ucloud-cdn-log-parser"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
