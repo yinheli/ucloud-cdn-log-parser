@@ -91,7 +91,7 @@ fn parse_and_write<W: Write>(r: impl BufRead, mut w: Writer<W>) -> io::Result<()
     ];
     w.write_record(&headers)?;
 
-    let re = Regex::new(r#"(\[.*?\])|(".*?")|(-)|(\S+)"#).unwrap();
+    let re = Regex::new(r#"(\[.*?\])|(".*?")|([\d\.]+\:\d+,\s[\d\.]+)|(-)|(\S+)"#).unwrap();
 
     for line in r.lines() {
         let line = line?;
