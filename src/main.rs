@@ -92,30 +92,20 @@ fn parse_and_write<W: Write>(r: impl BufRead, mut w: Writer<W>) -> io::Result<()
 
     for line in r.lines() {
         let line = line?;
-        let mats = re.captures_iter(&line);
-        let items = mats
-            .flat_map(|caps| {
-                caps.iter()
-                    .skip(1)
-                    .filter(|v| v.is_some())
-                    .map(|it| {
-                        let v = it.unwrap()
-                            .as_str()
-                            .trim_matches(|c|  c == '[' || c == ']')
-                            .replace("\r", "")
-                            .replace("\t", "")
-                            .replace("\n", "")
-                            .replace("NONE/-", ""); // fix NONE/- prevent hints to date_time
-                        if v == "-" {
-                            "".to_string()
-                        } else {
-                            v
-                        }
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .collect::<Vec<_>>();
-
+        // replace with captures_iter for speed up
+        let items = re.find_iter(&line).map(|m| {
+            let v = m.as_str()
+                .trim_matches(|c|  c == '[' || c == ']')
+                .replace("\r", "")
+                .replace("\t", "")
+                .replace("\n", "") 
+                .replace("NONE/-", "");
+            if v == "-" {
+                "".to_string()
+            } else {
+                v.to_string()
+            }
+        }).collect::<Vec<_>>();
         if items.len() != headers.len() {
             eprintln!(
                 "Error: require size: {}, get size: {}\n\n  {}\n\n  {}",
