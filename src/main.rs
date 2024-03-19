@@ -53,6 +53,9 @@ fn main(){
 
 }
 
+
+// [2024-03-19 22:04:25] 114.250.52.160 "GET /footage/mergeSnapshot/BeOBGh2aCHUhMA.jpg?iopstyle=stock05 HTTP/2.0" 
+// TCP_HIT 200 28679 8611 us-stock5.xpccdn.com "https://stock.xinpianchang.com/footages/2027498/p-6/" - NONE/- 111.174.12.100 10.63.61.45:8899, 10.63.61.46 200 0 0 "Mozilla/5.0+(Macintosh;+Intel+Mac+OS+X+10_15_7)+AppleWebKit/537.36+(KHTML,+like+Gecko)+Chrome/114.0.0.0+Safari/537.36" 1710857065588 43e3f43b38193594ba86bf3c591e8a00 - 28342 28342 0 0 20000 0 0 0 https us-stock5.xpccdn.com
 fn parse_and_write<W: Write>(r: impl BufRead, mut w: Writer<W>) -> io::Result<()> {
     let headers = vec![
         "date_time",
@@ -107,13 +110,19 @@ fn parse_and_write<W: Write>(r: impl BufRead, mut w: Writer<W>) -> io::Result<()
             }
         }).collect::<Vec<_>>();
         if items.len() != headers.len() {
+            
             eprintln!(
-                "Error: require size: {}, get size: {}\n\n  {}\n\n  {}",
+                "Error: require size: {}, get size: {}\n\n  {}\n\n  {}\n\n",
                 headers.len(),
                 items.len(),
                 items.join(","),
                 line
             );
+            eprintln!("-----------------------------");
+            headers.iter().zip(items.iter()).for_each(|(h, i)| {
+                eprintln!("{}: {}", h, i);
+            });
+            eprintln!("-----------------------------");
             continue;
         }
 
