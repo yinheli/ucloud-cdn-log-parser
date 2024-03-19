@@ -1,8 +1,10 @@
-use std::{io::{self, BufRead, Write}, process::exit};
+use std::{io::{self, BufRead, BufReader, BufWriter, Write}, process::exit};
 
 use clap::{command, Parser, ValueEnum};
 use csv::Writer;
 use regex::Regex;
+
+const BUFFER_SIZE: usize = 1024 * 1024 * 16;
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -12,6 +14,9 @@ struct Args {
 
     #[clap(short, long, default_value = "csv")]
     format: Format,
+
+    #[clap(short, long, default_value_t = BUFFER_SIZE, help = "buffer size")]
+    buffer_size: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, ValueEnum)]
@@ -35,8 +40,10 @@ fn main(){
         }
     }
 
-    let w = wb.from_writer(io::stdout());
-    if let Err(e) = parse_and_write(w) {
+    let r = BufReader::with_capacity(BUFFER_SIZE, io::stdin());
+    let w = wb.from_writer(BufWriter::with_capacity(BUFFER_SIZE, io::stdout()));
+
+    if let Err(e) = parse_and_write(r, w) {
         if e.kind() != io::ErrorKind::BrokenPipe {
             return;
         }
@@ -46,7 +53,7 @@ fn main(){
 
 }
 
-fn parse_and_write<W: Write>(mut w: Writer<W>) -> io::Result<()> {
+fn parse_and_write<W: Write>(r: impl BufRead, mut w: Writer<W>) -> io::Result<()> {
     let headers = vec![
         "date_time",
         "client_ip",
@@ -82,9 +89,8 @@ fn parse_and_write<W: Write>(mut w: Writer<W>) -> io::Result<()> {
     w.write_record(&headers)?;
 
     let re = Regex::new(r#"(\[.*?\])|(".*?")|(-)|(\S+)"#).unwrap();
-    let stdin = io::stdin();
 
-    for line in stdin.lock().lines() {
+    for line in r.lines() {
         let line = line?;
         let mats = re.captures_iter(&line);
         let items = mats
