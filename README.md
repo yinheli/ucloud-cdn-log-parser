@@ -1,6 +1,6 @@
 # ucloud-cdn-log-parser
 
-Parse ucloud cdn log to csv format with header, then you can use duckdb / clickhouse local / etc to analyze the log.
+Parse ucloud cdn log to csv/tsv format with/without header, then you can use duckdb / clickhouse local / etc to analyze the log.
 
 ## Install
 
@@ -17,7 +17,11 @@ cargo install ucloud-cdn-log-parser --locked
 ```bash
 # download logs
 
-# parse & convert to parquet
+# parse & convert to csv / parquet
+
+zcat *.gz | \
+  ucloud-cdn-log-parser > log.csv
+
 zcat *.gz | \
   ucloud-cdn-log-parser | \
   duckdb -c "copy (select * from read_csv('/dev/stdin')) to 'log.parquet' (format parquet)"
