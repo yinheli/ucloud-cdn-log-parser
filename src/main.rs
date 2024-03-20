@@ -21,8 +21,8 @@ struct Args {
 
 #[derive(Debug, Clone, PartialEq, ValueEnum)]
 enum Format {
-    CSV,
-    TSV,
+    Csv,
+    Tsv,
 }
 
 fn main(){
@@ -32,10 +32,10 @@ fn main(){
     wb.quote_style(csv::QuoteStyle::NonNumeric);
     
     match arg.format {
-        Format::CSV => {
+        Format::Csv => {
             wb.delimiter(b',');
         }
-        Format::TSV => {
+        Format::Tsv => {
             wb.delimiter(b'\t');
         }
     }
@@ -99,9 +99,7 @@ fn parse_and_write<W: Write>(r: impl BufRead, mut w: Writer<W>) -> io::Result<()
         let items = re.find_iter(&line).map(|m| {
             let v = m.as_str()
                 .trim_matches(|c|  c == '[' || c == ']')
-                .replace("\r", "")
-                .replace("\t", "")
-                .replace("\n", "") 
+                .replace(['\r', '\t', '\n'], "") 
                 .replace("NONE/-", "");
             if v == "-" {
                 "".to_string()
